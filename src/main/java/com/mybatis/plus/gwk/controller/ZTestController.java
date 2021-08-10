@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mybatis.plus.gwk.entity.ZTest;
 import com.mybatis.plus.gwk.service.ZTestService;
+import com.mybatis.plus.gwk.vo.OrderTicketResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -84,6 +85,11 @@ public class ZTestController {
     @RequestMapping("/zTest/get")
     public String getZtest(@RequestBody String orderNo){
         return testService.getZtest( orderNo).getContent();
+    }
+
+    @RequestMapping("/order/ticket")
+    public OrderTicketResponse orderTicket(String requestStr){
+        return testService.orderTicket(requestStr);
     }
 
         }

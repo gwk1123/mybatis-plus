@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.mybatis.plus.gwk.entity.ZTest;
+import com.mybatis.plus.gwk.vo.OrderTicketResponse;
 
 import java.util.List;
 
@@ -71,4 +72,6 @@ public interface ZTestService extends IService<ZTest> {
     List<ZTest> listZtest();
 
     ZTest getZtest(String orderNo);
+
+    OrderTicketResponse orderTicket(String requestStr);
 }

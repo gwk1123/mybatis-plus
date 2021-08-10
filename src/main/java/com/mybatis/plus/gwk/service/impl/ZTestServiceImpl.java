@@ -1,5 +1,6 @@
 package com.mybatis.plus.gwk.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -8,8 +9,10 @@ import com.mybatis.plus.gwk.entity.ZTest;
 import com.mybatis.plus.gwk.mapper.ZTestMapper;
 import com.mybatis.plus.gwk.service.ZTestService;
 import com.mybatis.plus.gwk.transform.JsonTransform;
+import com.mybatis.plus.gwk.vo.OrderTicketRequest;
+import com.mybatis.plus.gwk.vo.OrderTicketResponse;
 import com.mybatis.plus.utils.CreateOrderNo;
-import com.mybatis.plus.utils.HttpRequestUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -32,6 +35,7 @@ import java.util.concurrent.Executors;
  * @author gwk
  * @since 2021-08-06
  */
+@Slf4j
 @Service
 public class ZTestServiceImpl extends ServiceImpl<ZTestMapper, ZTest> implements ZTestService {
 
@@ -118,6 +122,21 @@ public class ZTestServiceImpl extends ServiceImpl<ZTestMapper, ZTest> implements
             }, executorService);
         }
 //        });
+    }
+
+
+
+
+    @Override
+    public OrderTicketResponse orderTicket(String requestStr){
+        log.info("票号回填:"+requestStr);
+        OrderTicketRequest orderTicketRequest = JSON.parseObject(requestStr,OrderTicketRequest.class);
+        OrderTicketResponse orderTicketResponse =new OrderTicketResponse();
+        boolean bool = JsonTransform.randomNmu(0,2) == 0?false:true;
+        orderTicketResponse.setIs_order_success(bool);
+        orderTicketResponse.setIs_success(bool);
+        orderTicketResponse.setIs_ticket_success(bool);
+        return orderTicketResponse;
     }
 
 
