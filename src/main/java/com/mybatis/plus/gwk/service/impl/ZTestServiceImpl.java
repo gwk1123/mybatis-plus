@@ -105,7 +105,7 @@ public class ZTestServiceImpl extends ServiceImpl<ZTestMapper, ZTest> implements
         ExecutorService executorService = Executors.newFixedThreadPool(5);
 //        String no = CreateOrderNo.create();
 //        IntStream.range(0, 100000).forEach(i -> {
-        for(int i =1;i<100001;i++) {
+        for(int i =1;i<1000;i++) {
             String finalI = CreateOrderNo.create();
             try {
                 Thread.sleep(1000);
