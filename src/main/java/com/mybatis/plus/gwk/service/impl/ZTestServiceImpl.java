@@ -78,7 +78,9 @@ public class ZTestServiceImpl extends ServiceImpl<ZTestMapper, ZTest> implements
 
     @Override
     public ZTest getZTestById(String id){
-        return  this.getById(id);
+        QueryWrapper<ZTest> zTestQueryWrapper =new QueryWrapper<>();
+        zTestQueryWrapper.lambda().eq(ZTest::getOrderNo,id);
+        return  this.getOne(zTestQueryWrapper);
     }
 
     @Override
