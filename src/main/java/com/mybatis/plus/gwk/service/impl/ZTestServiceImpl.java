@@ -104,13 +104,13 @@ public class ZTestServiceImpl extends ServiceImpl<ZTestMapper, ZTest> implements
 
     @Override
     public void saveZtest() {
-        ExecutorService executorService = Executors.newFixedThreadPool(5);
+        ExecutorService executorService = Executors.newFixedThreadPool(15);
 //        String no = CreateOrderNo.create();
 //        IntStream.range(0, 100000).forEach(i -> {
-        for(int i =1;i<1000;i++) {
+        for(int i =1;i<500;i++) {
             String finalI = CreateOrderNo.create();
             try {
-                Thread.sleep(1000);
+                Thread.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

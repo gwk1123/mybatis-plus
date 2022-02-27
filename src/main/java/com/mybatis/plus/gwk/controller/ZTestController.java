@@ -87,6 +87,11 @@ public class ZTestController {
         return testService.getZtest( orderNo).getContent();
     }
 
+    /**
+     * 测试飞猪票号回填
+     * @param requestStr
+     * @return
+     */
     @RequestMapping("/order/ticket")
     public OrderTicketResponse orderTicket(String requestStr){
         return testService.orderTicket(requestStr);
