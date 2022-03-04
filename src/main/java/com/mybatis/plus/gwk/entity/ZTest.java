@@ -28,6 +28,8 @@ public class ZTest implements Serializable {
     @TableId(type= IdType.AUTO)
     private Integer id;
 
+    private String type;
+
     private String orderNo;
 
     private String content;

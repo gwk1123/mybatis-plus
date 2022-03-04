@@ -39,6 +39,8 @@ import java.util.concurrent.Executors;
 @Service
 public class ZTestServiceImpl extends ServiceImpl<ZTestMapper, ZTest> implements ZTestService {
 
+    private static final String ORDER = "order";
+
     @Override
     public IPage<ZTest> pageZTest(Page<ZTest> page, ZTest zTest){
 
@@ -89,7 +91,7 @@ public class ZTestServiceImpl extends ServiceImpl<ZTestMapper, ZTest> implements
         System.out.println("开始时间:"+ LocalDateTime.now());
         List<ZTest> zTests =new ArrayList<>();
         QueryWrapper<ZTest> zTestQueryWrapper =new QueryWrapper<>();
-        zTestQueryWrapper.lambda().select(ZTest::getOrderNo);
+        zTestQueryWrapper.lambda().eq(ZTest::getType,ORDER).select(ZTest::getOrderNo);
         zTests = this.list(zTestQueryWrapper);
         System.out.println("结束时间:"+ LocalDateTime.now());
         return zTests;
@@ -117,6 +119,7 @@ public class ZTestServiceImpl extends ServiceImpl<ZTestMapper, ZTest> implements
             CompletableFuture.runAsync(() -> {
                 ZTest zTest = new ZTest();
                 zTest.setOrderNo(String.valueOf(finalI));
+                zTest.setType(ORDER);
                 String s = JsonTransform.jsonOrderDetail(finalI);
                 zTest.setContent(s);
                 System.out.println("---->" + finalI);
