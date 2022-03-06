@@ -1,5 +1,9 @@
 package com.mybatis.plus.gwk.transform;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.mybatis.plus.utils.HttpRequestUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -16,7 +20,7 @@ import java.util.Random;
 
 public class JsonTransform {
 
-
+    private static String GET_Z_TEST = "http://localhost:8082/z-test/zTest/";
 
 
     public String jsonOrderSearch() {
@@ -328,6 +332,111 @@ public class JsonTransform {
         }
 
     }
+
+
+
+    public void saveRefund(String orderId){
+
+        String zTest = HttpRequestUtil.get(GET_Z_TEST+orderId);
+        JSONObject z = JSONObject.parseObject(zTest);
+        String c = (String) z.get("content");
+        String j = JSON.toJSONString(JSONObject.parseObject(c).get("jipiao_agent_order_detail_response")) ;
+        String o = JSON.toJSONString(JSONObject.parseObject(j).get("orders"));
+        JSONObject jsonObject = (JSONObject) JSONObject.parseArray(JSON.toJSONString(JSONObject.parseObject(o).get("trip_order"))).get(0);
+        JSONArray flight_infos = JSONArray.parseArray(JSON.toJSONString(JSONObject.parseObject(JSON.toJSONString(jsonObject.get("flight_infos"))).get("trip_flight_info")));
+
+        //生成飞猪退票对象
+        String refund = jsonRefundDetail();
+        JSONObject refundJson = JSONObject.parseObject(refund);
+        String alitrip_seller_refund_get_response = (String) refundJson.get("alitrip_seller_refund_get_response");
+        String result = (String) JSONObject.parseObject(alitrip_seller_refund_get_response).get("result");
+        String results = (String) JSONObject.parseObject(result).get("results");
+        JSONObject.parseObject(results).put("order_id",orderId);
+
+//        for(int i =0;i<flight_infos.size();i++){
+//            JSONObject jsonObject1 = (JSONObject) flight_infos.get(i);
+//            getOrderInfoResponse.getJourney().get(i).setCarrier(JSON.toJSONString(jsonObject1.get("airline_code")).replaceAll("\"",""));
+//            getOrderInfoResponse.getJourney().get(i).setFlightNo(JSON.toJSONString(jsonObject1.get("flight_no")).replaceAll("\"","").substring(2));
+//            getOrderInfoResponse.getJourney().get(i).setBoardPoint(JSON.toJSONString(jsonObject1.get("dep_airport_code")).replaceAll("\"",""));
+//            getOrderInfoResponse.getJourney().get(i).setOffPoint(JSON.toJSONString(jsonObject1.get("arr_airport_code")).replaceAll("\"",""));
+//            getOrderInfoResponse.getJourney().get(i).setFromDateTime(JSON.toJSONString(jsonObject1.get("dep_time")).replaceAll("\"",""));
+//            getOrderInfoResponse.getJourney().get(i).setTodateTime(JSON.toJSONString(jsonObject1.get("arr_time")).replaceAll("\"",""));
+//        }
+//        JSONArray passengers = JSONObject.parseArray(JSON.toJSONString(((JSONObject)flight_infos.get(0)).get("passengers")));
+//        for(int i =0;i<passengers.size();i++){
+//            JSONObject pass =  (JSONObject) passengers.get(i);
+//            getOrderInfoResponse.getPassenger().get(i).setPassengerName(JSON.toJSONString( pass.get("name")).replaceAll("\"",""));
+//            getOrderInfoResponse.getPassenger().get(i).setPassengersBirth(JSON.toJSONString(pass.get("birthday")).replaceAll("\"",""));
+//            getOrderInfoResponse.getPassenger().get(i).setCardId(JSON.toJSONString( pass.get("cert_no")).replaceAll("\"",""));
+//        }
+
+
+    }
+
+
+
+    public String jsonRefundDetail(){
+
+        String str = "{\n" +
+                "    \"alitrip_seller_refund_get_response\":{\n" +
+                "        \"result\":{\n" +
+                "            \"errorCode\":\"99\",\n" +
+                "            \"errorMsg\":\"系统异常\",\n" +
+                "            \"results\":{\n" +
+                "                \"apply_id\":1234,\n" +
+                "                \"apply_reason_type\":1,\n" +
+                "                \"apply_time\":\"2015-12-12 00:00:00\",\n" +
+                "                \"first_process_time\":\"2015-12-12 00:00:00\",\n" +
+                "                \"order_id\":12345678,\n" +
+                "                \"pay_success_time\":\"2015-12-12 00:00:00\",\n" +
+                "                \"reason\":\"出行时间有变\",\n" +
+                "                \"refund_fee\":200,\n" +
+                "                \"refund_money\":2000,\n" +
+                "                \"return_apply_passenge\":{\n" +
+                "                    \"return_apply_passenge\":[\n" +
+                "                        {\n" +
+                "                            \"discount_ticket_price\":0,\n" +
+                "                            \"id\":445566,\n" +
+                "                            \"passenger_name\":\"金堡\",\n" +
+                "                            \"passenger_type\":4,\n" +
+                "                            \"refund_fee\":200,\n" +
+                "                            \"refund_money\":2000,\n" +
+                "                            \"return_ticket_segment\":{\n" +
+                "                                \"return_ticket_segment\":[\n" +
+                "                                    {\n" +
+                "                                        \"arr_airport_code\":\"CAN\",\n" +
+                "                                        \"arr_city\":\"广州\",\n" +
+                "                                        \"build_fee\":5000,\n" +
+                "                                        \"dep_airport_code\":\"PEK\",\n" +
+                "                                        \"dep_city\":\"北京\",\n" +
+                "                                        \"dep_time\":\"2015-12-23 10:05\",\n" +
+                "                                        \"flight_no\":\"CA3213\",\n" +
+                "                                        \"id\":11223344,\n" +
+                "                                        \"oil_tax\":0,\n" +
+                "                                        \"refund_modify_fee\":0,\n" +
+                "                                        \"refund_upgrade_fee\":0,\n" +
+                "                                        \"suspend\":false,\n" +
+                "                                        \"ticket_no\":\"784-XXXXXXX\",\n" +
+                "                                        \"trip_type\":0\n" +
+                "                                    }\n" +
+                "                                ]\n" +
+                "                            },\n" +
+                "                            \"ticket_price\":100000,\n" +
+                "                            \"voucher_price\":0\n" +
+                "                        }\n" +
+                "                    ]\n" +
+                "                },\n" +
+                "                \"status\":1,\n" +
+                "                \"credit_money\":2\n" +
+                "            },\n" +
+                "            \"success\":true\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
+
+        return str;
+    }
+
 
 
 }

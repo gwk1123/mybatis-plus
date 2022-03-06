@@ -74,4 +74,6 @@ public interface ZTestService extends IService<ZTest> {
     ZTest getZtest(String orderNo);
 
     OrderTicketResponse orderTicket(String requestStr);
+
+    void saveRefundZtest();
 }
