@@ -3,12 +3,16 @@ package com.mybatis.plus.gwk.transform;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.mybatis.plus.gwk.entity.ZTest;
+import com.mybatis.plus.gwk.service.ZTestService;
 import com.mybatis.plus.utils.HttpRequestUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
@@ -335,103 +339,121 @@ public class JsonTransform {
 
 
 
-    public void saveRefund(String orderId){
+    public static String saveRefund(ZTest zTest){
 
-        String zTest = HttpRequestUtil.get(GET_Z_TEST+orderId);
-        JSONObject z = JSONObject.parseObject(zTest);
-        String c = (String) z.get("content");
+        String orderId= zTest.getOrderNo();
+        JSONObject z = JSONObject.parseObject(zTest.getContent());
+        String c = JSON.toJSONString(z);
         String j = JSON.toJSONString(JSONObject.parseObject(c).get("jipiao_agent_order_detail_response")) ;
         String o = JSON.toJSONString(JSONObject.parseObject(j).get("orders"));
         JSONObject jsonObject = (JSONObject) JSONObject.parseArray(JSON.toJSONString(JSONObject.parseObject(o).get("trip_order"))).get(0);
         JSONArray flight_infos = JSONArray.parseArray(JSON.toJSONString(JSONObject.parseObject(JSON.toJSONString(jsonObject.get("flight_infos"))).get("trip_flight_info")));
 
+        JSONObject flight_segments0 = (JSONObject) flight_infos.get(0);
+        JSONArray flight_passengers = JSONArray.parseArray(JSON.toJSONString(flight_segments0.get("passengers")));
+
         //生成飞猪退票对象
         String refund = jsonRefundDetail();
         JSONObject refundJson = JSONObject.parseObject(refund);
-        String alitrip_seller_refund_get_response = (String) refundJson.get("alitrip_seller_refund_get_response");
-        String result = (String) JSONObject.parseObject(alitrip_seller_refund_get_response).get("result");
-        String results = (String) JSONObject.parseObject(result).get("results");
-        JSONObject.parseObject(results).put("order_id",orderId);
+        String alitrip_seller_refund_get_response = JSON.toJSONString(refundJson.get("alitrip_seller_refund_get_response"));
+        String result = JSON.toJSONString(JSONObject.parseObject(alitrip_seller_refund_get_response).get("result"));
+        String results = JSON.toJSONString(JSONObject.parseObject(result).get("results"));
 
-//        for(int i =0;i<flight_infos.size();i++){
-//            JSONObject jsonObject1 = (JSONObject) flight_infos.get(i);
-//            getOrderInfoResponse.getJourney().get(i).setCarrier(JSON.toJSONString(jsonObject1.get("airline_code")).replaceAll("\"",""));
-//            getOrderInfoResponse.getJourney().get(i).setFlightNo(JSON.toJSONString(jsonObject1.get("flight_no")).replaceAll("\"","").substring(2));
-//            getOrderInfoResponse.getJourney().get(i).setBoardPoint(JSON.toJSONString(jsonObject1.get("dep_airport_code")).replaceAll("\"",""));
-//            getOrderInfoResponse.getJourney().get(i).setOffPoint(JSON.toJSONString(jsonObject1.get("arr_airport_code")).replaceAll("\"",""));
-//            getOrderInfoResponse.getJourney().get(i).setFromDateTime(JSON.toJSONString(jsonObject1.get("dep_time")).replaceAll("\"",""));
-//            getOrderInfoResponse.getJourney().get(i).setTodateTime(JSON.toJSONString(jsonObject1.get("arr_time")).replaceAll("\"",""));
-//        }
-//        JSONArray passengers = JSONObject.parseArray(JSON.toJSONString(((JSONObject)flight_infos.get(0)).get("passengers")));
-//        for(int i =0;i<passengers.size();i++){
-//            JSONObject pass =  (JSONObject) passengers.get(i);
-//            getOrderInfoResponse.getPassenger().get(i).setPassengerName(JSON.toJSONString( pass.get("name")).replaceAll("\"",""));
-//            getOrderInfoResponse.getPassenger().get(i).setPassengersBirth(JSON.toJSONString(pass.get("birthday")).replaceAll("\"",""));
-//            getOrderInfoResponse.getPassenger().get(i).setCardId(JSON.toJSONString( pass.get("cert_no")).replaceAll("\"",""));
-//        }
+        JSONObject resultsJsonObject = JSONObject.parseObject(results);
+        resultsJsonObject.put("order_id",orderId);
+        resultsJsonObject.put("status","2");
+        String resultCopy = JSON.toJSONString(resultsJsonObject);
 
+        JSONArray flight_refunds = JSONArray.parseArray(JSON.toJSONString(JSONObject.parseObject(resultCopy).get("return_apply_passenge")));
+        JSONObject refund_passenge = (JSONObject) flight_refunds.get(0);
+        JSONArray refund_segments =  JSONArray.parseArray(JSON.toJSONString(refund_passenge.get("return_ticket_segment")));
+
+        JSONArray passengerJSONArray =new JSONArray();
+        for(int i =0;i<flight_passengers.size();i++){
+            JSONObject flight_passenge = (JSONObject) flight_passengers.get(i);
+            JSONObject refund_passenge_new =new JSONObject();
+            refund_passenge_new.put("passenger_name",flight_passenge.get("name"));
+            refund_passenge_new.put("passenger_type",flight_passenge.get("passenger_type"));
+            refund_passenge_new.put("refund_money","4532.0");
+            refund_passenge_new.put("refund_fee","1256.0");
+
+            JSONArray segmentJSONArray =new JSONArray();
+            JSONObject refund_segment = new JSONObject();
+            refund_segment.put("dep_airport_code",flight_segments0.get("dep_airport_code"));
+            refund_segment.put("dep_city",flight_segments0.get("dep_city_code"));
+            refund_segment.put("arr_airport_code",flight_segments0.get("arr_airport_code"));
+            refund_segment.put("arr_city_code",flight_segments0.get("dep_airport_code"));
+            refund_segment.put("flight_no",flight_segments0.get("flight_no"));
+            String deptime = flight_segments0.get("dep_time").toString().substring(0,flight_segments0.get("dep_time").toString().length()-3);
+            refund_segment.put("dep_time",deptime);
+            refund_segment.put("ticket_no","abc1234567");
+            segmentJSONArray.add(refund_segment);
+            refund_passenge_new.put("return_ticket_segment",segmentJSONArray);
+
+            passengerJSONArray.add(refund_passenge_new);
+        }
+
+        JSONObject resultNew = JSONObject.parseObject(resultCopy);
+        resultNew.put("return_apply_passenge",passengerJSONArray);
+        return JSON.toJSONString(resultNew);
 
     }
 
 
 
-    public String jsonRefundDetail(){
+    public static String jsonRefundDetail(){
 
         String str = "{\n" +
-                "    \"alitrip_seller_refund_get_response\":{\n" +
-                "        \"result\":{\n" +
-                "            \"errorCode\":\"99\",\n" +
-                "            \"errorMsg\":\"系统异常\",\n" +
-                "            \"results\":{\n" +
-                "                \"apply_id\":1234,\n" +
-                "                \"apply_reason_type\":1,\n" +
-                "                \"apply_time\":\"2015-12-12 00:00:00\",\n" +
-                "                \"first_process_time\":\"2015-12-12 00:00:00\",\n" +
-                "                \"order_id\":12345678,\n" +
-                "                \"pay_success_time\":\"2015-12-12 00:00:00\",\n" +
-                "                \"reason\":\"出行时间有变\",\n" +
-                "                \"refund_fee\":200,\n" +
-                "                \"refund_money\":2000,\n" +
-                "                \"return_apply_passenge\":{\n" +
-                "                    \"return_apply_passenge\":[\n" +
-                "                        {\n" +
-                "                            \"discount_ticket_price\":0,\n" +
-                "                            \"id\":445566,\n" +
-                "                            \"passenger_name\":\"金堡\",\n" +
-                "                            \"passenger_type\":4,\n" +
-                "                            \"refund_fee\":200,\n" +
-                "                            \"refund_money\":2000,\n" +
-                "                            \"return_ticket_segment\":{\n" +
-                "                                \"return_ticket_segment\":[\n" +
-                "                                    {\n" +
-                "                                        \"arr_airport_code\":\"CAN\",\n" +
-                "                                        \"arr_city\":\"广州\",\n" +
-                "                                        \"build_fee\":5000,\n" +
-                "                                        \"dep_airport_code\":\"PEK\",\n" +
-                "                                        \"dep_city\":\"北京\",\n" +
-                "                                        \"dep_time\":\"2015-12-23 10:05\",\n" +
-                "                                        \"flight_no\":\"CA3213\",\n" +
-                "                                        \"id\":11223344,\n" +
-                "                                        \"oil_tax\":0,\n" +
-                "                                        \"refund_modify_fee\":0,\n" +
-                "                                        \"refund_upgrade_fee\":0,\n" +
-                "                                        \"suspend\":false,\n" +
-                "                                        \"ticket_no\":\"784-XXXXXXX\",\n" +
-                "                                        \"trip_type\":0\n" +
-                "                                    }\n" +
-                "                                ]\n" +
-                "                            },\n" +
-                "                            \"ticket_price\":100000,\n" +
-                "                            \"voucher_price\":0\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"status\":1,\n" +
-                "                \"credit_money\":2\n" +
-                "            },\n" +
-                "            \"success\":true\n" +
-                "        }\n" +
-                "    }\n" +
+                "\t\"alitrip_seller_refund_get_response\": {\n" +
+                "\t\t\"result\": {\n" +
+                "\t\t\t\"errorCode\": \"99\",\n" +
+                "\t\t\t\"errorMsg\": \"系统异常\",\n" +
+                "\t\t\t\"results\": {\n" +
+                "\t\t\t\t\"apply_id\": 1234,\n" +
+                "\t\t\t\t\"apply_reason_type\": 1,\n" +
+                "\t\t\t\t\"apply_time\": \"2015-12-12 00:00:00\",\n" +
+                "\t\t\t\t\"first_process_time\": \"2015-12-12 00:00:00\",\n" +
+                "\t\t\t\t\"order_id\": 12345678,\n" +
+                "\t\t\t\t\"pay_success_time\": \"2015-12-12 00:00:00\",\n" +
+                "\t\t\t\t\"reason\": \"出行时间有变\",\n" +
+                "\t\t\t\t\"refund_fee\": 200,\n" +
+                "\t\t\t\t\"refund_money\": 2000,\n" +
+                "\t\t\t\t\"return_apply_passenge\": [\n" +
+                "\t\t\t\t\t{\n" +
+                "\t\t\t\t\t\t\"discount_ticket_price\": 0,\n" +
+                "\t\t\t\t\t\t\"id\": 445566,\n" +
+                "\t\t\t\t\t\t\"passenger_name\": \"金堡\",\n" +
+                "\t\t\t\t\t\t\"passenger_type\": 4,\n" +
+                "\t\t\t\t\t\t\"refund_fee\": 200,\n" +
+                "\t\t\t\t\t\t\"refund_money\": 2000,\n" +
+                "\t\t\t\t\t\t\t\"return_ticket_segment\": [\n" +
+                "\t\t\t\t\t\t\t\t{\n" +
+                "\t\t\t\t\t\t\t\t\t\"arr_airport_code\": \"CAN\",\n" +
+                "\t\t\t\t\t\t\t\t\t\"arr_city\": \"广州\",\n" +
+                "\t\t\t\t\t\t\t\t\t\"build_fee\": 5000,\n" +
+                "\t\t\t\t\t\t\t\t\t\"dep_airport_code\": \"PEK\",\n" +
+                "\t\t\t\t\t\t\t\t\t\"dep_city\": \"北京\",\n" +
+                "\t\t\t\t\t\t\t\t\t\"dep_time\": \"2015-12-23 10:05\",\n" +
+                "\t\t\t\t\t\t\t\t\t\"flight_no\": \"CA3213\",\n" +
+                "\t\t\t\t\t\t\t\t\t\"id\": 11223344,\n" +
+                "\t\t\t\t\t\t\t\t\t\"oil_tax\": 0,\n" +
+                "\t\t\t\t\t\t\t\t\t\"refund_modify_fee\": 0,\n" +
+                "\t\t\t\t\t\t\t\t\t\"refund_upgrade_fee\": 0,\n" +
+                "\t\t\t\t\t\t\t\t\t\"suspend\": false,\n" +
+                "\t\t\t\t\t\t\t\t\t\"ticket_no\": \"784-XXXXXXX\",\n" +
+                "\t\t\t\t\t\t\t\t\t\"trip_type\": 0\n" +
+                "\t\t\t\t\t\t\t\t}\n" +
+                "\t\t\t\t\t\t\t],\n" +
+                "\t\t\t\t\t\t\"ticket_price\": 100000,\n" +
+                "\t\t\t\t\t\t\"voucher_price\": 0\n" +
+                "\t\t\t\t\t}\n" +
+                "\t\t\t\t],\n" +
+                "\t\t\t\t\"status\": 1,\n" +
+                "\t\t\t\t\"credit_money\": 2\n" +
+                "\t\t\t},\n" +
+                "\t\t\t\"success\": true\n" +
+                "\t\t}\n" +
+                "\t}\n" +
                 "}";
 
         return str;

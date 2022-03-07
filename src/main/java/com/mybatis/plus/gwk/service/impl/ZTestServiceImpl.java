@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 
 /**
@@ -40,6 +41,7 @@ import java.util.concurrent.Executors;
 public class ZTestServiceImpl extends ServiceImpl<ZTestMapper, ZTest> implements ZTestService {
 
     private static final String ORDER = "order";
+    private static final String REFUND = "refund";
 
     @Override
     public IPage<ZTest> pageZTest(Page<ZTest> page, ZTest zTest){
@@ -147,6 +149,21 @@ public class ZTestServiceImpl extends ServiceImpl<ZTestMapper, ZTest> implements
     @Override
     public void saveRefundZtest() {
 
+
+        QueryWrapper<ZTest> zTestQueryWrapper =new QueryWrapper<>();
+        zTestQueryWrapper.lambda().eq(ZTest::getType,ORDER);
+        List<ZTest> zTests = this.list(zTestQueryWrapper);
+
+        List<ZTest> zTestList = zTests.stream().filter(f -> f.getId()%3 == 0).map(m -> {
+            ZTest zTest = this.getZtest(m.getOrderNo());
+            String centon = JsonTransform.saveRefund( zTest);
+            ZTest z =new ZTest();
+            z.setType(REFUND);
+            z.setContent(centon);
+            z.setOrderNo(m.getOrderNo());
+            return z;
+        }).collect(Collectors.toList());
+        this.saveBatch(zTestList);
     }
 
 
