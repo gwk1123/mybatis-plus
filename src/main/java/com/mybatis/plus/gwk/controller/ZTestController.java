@@ -105,4 +105,16 @@ public class ZTestController {
     public void saveRefundZtest() {
         testService.saveRefundZtest();
     }
+
+
+    @RequestMapping("/zTest/refund/list")
+    public List<String> listRefundZtest() {
+        return testService.listRefundZtest().stream().map(m -> m.getOrderNo()).collect(Collectors.toList());
+    }
+
+    @RequestMapping("/zTest/refund/get")
+    public String getRefundZtest(@RequestBody String orderNo) {
+        return testService.getRefundZtest(orderNo).getContent();
+    }
+
 }

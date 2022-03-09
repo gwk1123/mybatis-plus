@@ -395,8 +395,12 @@ public class JsonTransform {
 
         JSONObject resultNew = JSONObject.parseObject(resultCopy);
         resultNew.put("return_apply_passenge",passengerJSONArray);
-        return JSON.toJSONString(resultNew);
-
+        JSONObject results_New = new JSONObject();
+        results_New.put("results",resultNew);
+        results_New.put("success",true);
+        JSONObject alitrip_seller_refund_get_responseNew = new JSONObject();
+        alitrip_seller_refund_get_responseNew.put("alitrip_seller_refund_get_response",results_New);
+        return JSON.toJSONString(alitrip_seller_refund_get_responseNew);
     }
 
 

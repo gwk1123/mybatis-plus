@@ -101,7 +101,8 @@ public class ZTestServiceImpl extends ServiceImpl<ZTestMapper, ZTest> implements
     @Override
     public ZTest getZtest(String orderNo){
         QueryWrapper<ZTest> zTestQueryWrapper =new QueryWrapper<>();
-        zTestQueryWrapper.lambda().eq(ZTest::getOrderNo,orderNo);
+        zTestQueryWrapper.lambda().eq(ZTest::getType,ORDER)
+                .eq(ZTest::getOrderNo,orderNo);
         return this.getOne(zTestQueryWrapper);
     }
 
@@ -166,5 +167,26 @@ public class ZTestServiceImpl extends ServiceImpl<ZTestMapper, ZTest> implements
         this.saveBatch(zTestList);
     }
 
+
+    @Override
+    public List<ZTest> listRefundZtest(){
+
+        System.out.println("开始时间:"+ LocalDateTime.now());
+        List<ZTest> zTests =new ArrayList<>();
+        QueryWrapper<ZTest> zTestQueryWrapper =new QueryWrapper<>();
+        zTestQueryWrapper.lambda().eq(ZTest::getType,REFUND).select(ZTest::getOrderNo);
+        zTests = this.list(zTestQueryWrapper);
+        System.out.println("结束时间:"+ LocalDateTime.now());
+        return zTests;
+    }
+
+
+    @Override
+    public ZTest getRefundZtest(String orderNo){
+        QueryWrapper<ZTest> zTestQueryWrapper =new QueryWrapper<>();
+        zTestQueryWrapper.lambda().eq(ZTest::getType,REFUND)
+                .eq(ZTest::getOrderNo,orderNo);
+        return this.getOne(zTestQueryWrapper);
+    }
 
 }
