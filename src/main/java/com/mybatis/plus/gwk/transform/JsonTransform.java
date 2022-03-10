@@ -379,6 +379,7 @@ public class JsonTransform {
 
             JSONArray segmentJSONArray =new JSONArray();
             JSONObject refund_segment = new JSONObject();
+            refund_segment.put("trip_type",flight_segments0.get("segment_type"));
             refund_segment.put("dep_airport_code",flight_segments0.get("dep_airport_code"));
             refund_segment.put("dep_city",flight_segments0.get("dep_city_code"));
             refund_segment.put("arr_airport_code",flight_segments0.get("arr_airport_code"));
