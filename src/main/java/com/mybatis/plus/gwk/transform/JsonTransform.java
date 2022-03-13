@@ -362,6 +362,7 @@ public class JsonTransform {
         JSONObject resultsJsonObject = JSONObject.parseObject(results);
         resultsJsonObject.put("order_id",orderId);
         resultsJsonObject.put("status","2");
+        resultsJsonObject.put("apply_id",orderId+"123");
         String resultCopy = JSON.toJSONString(resultsJsonObject);
 
         JSONArray flight_refunds = JSONArray.parseArray(JSON.toJSONString(JSONObject.parseObject(resultCopy).get("return_apply_passenge")));
