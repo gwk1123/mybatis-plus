@@ -83,7 +83,7 @@ public class ZTestServiceImpl extends ServiceImpl<ZTestMapper, ZTest> implements
     @Override
     public ZTest getZTestById(String id){
         QueryWrapper<ZTest> zTestQueryWrapper =new QueryWrapper<>();
-        zTestQueryWrapper.lambda().eq(ZTest::getOrderNo,id);
+        zTestQueryWrapper.lambda().eq(ZTest::getOrderNo,id).eq(ZTest::getType,"order");
         return  this.getOne(zTestQueryWrapper);
     }
 
@@ -112,7 +112,7 @@ public class ZTestServiceImpl extends ServiceImpl<ZTestMapper, ZTest> implements
         ExecutorService executorService = Executors.newFixedThreadPool(15);
 //        String no = CreateOrderNo.create();
 //        IntStream.range(0, 100000).forEach(i -> {
-        for(int i =1;i<500;i++) {
+        for(int i =1;i<10;i++) {
             String finalI = CreateOrderNo.create();
             try {
                 Thread.sleep(10);
