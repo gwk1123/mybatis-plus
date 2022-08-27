@@ -88,6 +88,13 @@ public class ZTestServiceImpl extends ServiceImpl<ZTestMapper, ZTest> implements
     }
 
     @Override
+    public ZTest getTicketById(String id){
+        QueryWrapper<ZTest> zTestQueryWrapper =new QueryWrapper<>();
+        zTestQueryWrapper.lambda().eq(ZTest::getOrderNo,id).eq(ZTest::getType,"ticket");
+        return  this.getOne(zTestQueryWrapper);
+    }
+
+    @Override
     public List<ZTest> listZtest(){
 
         System.out.println("开始时间:"+ LocalDateTime.now());

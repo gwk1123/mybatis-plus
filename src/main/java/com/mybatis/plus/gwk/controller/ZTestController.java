@@ -69,10 +69,17 @@ public class ZTestController {
     }
 
     @ApiOperation(value = "id查询")
+    @GetMapping("/ticket/{id}")
+    public ZTest getTicketById(@PathVariable String id) {
+        return testService.getTicketById(id);
+    }
+
+    @ApiOperation(value = "id查询")
     @GetMapping("/zTest/{id}")
     public ZTest getZTestById(@PathVariable String id) {
         return testService.getZTestById(id);
     }
+
 
     @RequestMapping("/zTest/order/add")
     public void saveOrderZtest() {

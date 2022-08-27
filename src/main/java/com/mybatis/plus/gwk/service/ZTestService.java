@@ -67,6 +67,8 @@ public interface ZTestService extends IService<ZTest> {
      */
     ZTest getZTestById(String id);
 
+    ZTest getTicketById(String id);
+
     void saveZtest();
 
     List<ZTest> listZtest();
