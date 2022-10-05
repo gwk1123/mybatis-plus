@@ -28,7 +28,11 @@ spring:
       test-on-borrow: true
       test-while-idle: true
 
-
+  redis:
+    redisson: # redisson的配置
+      address: redis://106.75.115.170:6379
+      password: gwk_632697105qq@.redis
+      connectionMinimumIdleSize: 15
 
 mybatis-plus:
   configuration:
