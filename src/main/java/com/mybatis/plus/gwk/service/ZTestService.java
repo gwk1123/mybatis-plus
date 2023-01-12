@@ -82,4 +82,8 @@ public interface ZTestService extends IService<ZTest> {
     List<ZTest> listRefundZtest();
 
     ZTest getRefundZtest(String orderNo);
+
+    void saveChange();
+
+    ZTest getChange(String orderNo);
 }

@@ -42,6 +42,7 @@ public class ZTestServiceImpl extends ServiceImpl<ZTestMapper, ZTest> implements
 
     private static final String ORDER = "order";
     private static final String REFUND = "refund";
+    private static final String CHANGE = "change";
 
     @Override
     public IPage<ZTest> pageZTest(Page<ZTest> page, ZTest zTest){
@@ -192,6 +193,25 @@ public class ZTestServiceImpl extends ServiceImpl<ZTestMapper, ZTest> implements
     public ZTest getRefundZtest(String orderNo){
         QueryWrapper<ZTest> zTestQueryWrapper =new QueryWrapper<>();
         zTestQueryWrapper.lambda().eq(ZTest::getType,REFUND)
+                .eq(ZTest::getOrderNo,orderNo);
+        return this.getOne(zTestQueryWrapper);
+    }
+
+
+    @Override
+    public void saveChange(){
+        ZTest zTest =new ZTest();
+        zTest.setType(CHANGE);
+        zTest.setOrderNo("GN16549357124800006");
+        String str =  JsonTransform.getChangeJson();
+        zTest.setContent(str);
+        save(zTest);
+    }
+
+    @Override
+    public ZTest getChange(String orderNo){
+        QueryWrapper<ZTest> zTestQueryWrapper =new QueryWrapper<>();
+        zTestQueryWrapper.lambda().eq(ZTest::getType,CHANGE)
                 .eq(ZTest::getOrderNo,orderNo);
         return this.getOne(zTestQueryWrapper);
     }

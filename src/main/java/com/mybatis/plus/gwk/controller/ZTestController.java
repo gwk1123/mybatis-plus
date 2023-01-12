@@ -124,4 +124,14 @@ public class ZTestController {
         return testService.getRefundZtest(orderNo).getContent();
     }
 
+    @RequestMapping("/zTest/change/add")
+    public void saveChange() {
+        testService.saveChange();
+    }
+
+    @RequestMapping("/zTest/change/get")
+    public String getChange(@RequestBody String orderNo) {
+        return testService.getChange(orderNo).getContent();
+    }
+
 }

@@ -466,5 +466,51 @@ public class JsonTransform {
     }
 
 
+    public static String getChangeJson(){
+
+        String str = "{\n" +
+                "\t\"alitrip_seller_modify_list_response\": {\n" +
+                "\t\t\"order_list\": {\n" +
+                "\t\t\t\"sync_order_do\": [\n" +
+                "\t\t\t\t{\n" +
+                "\t\t\t\t\t\"apply_id\": 11111111111,\n" +
+                "\t\t\t\t\t\"cabin\": \"Z\",\n" +
+                "\t\t\t\t\t\"last_cabin\": \"S\",\n" +
+                "\t\t\t\t\t\"memo\": \"因故改变行程\",\n" +
+                "\t\t\t\t\t\"modify_after_flight\": {\n" +
+                "\t\t\t\t\t\t\"air_line_code\": \"FM\",\n" +
+                "\t\t\t\t\t\t\"arr_airport\": \"SZX\",\n" +
+                "\t\t\t\t\t\t\"dep_airport\": \"PEK\",\n" +
+                "\t\t\t\t\t\t\"dep_date\": \"2022-09-21 00:10:00\",\n" +
+                "\t\t\t\t\t\t\"flight_no\": \"FM2987\"\n" +
+                "\t\t\t\t\t},\n" +
+                "\t\t\t\t\t\"modify_before_flight\": {\n" +
+                "\t\t\t\t\t\t\"air_line_code\": \"FM\",\n" +
+                "\t\t\t\t\t\t\"arr_airport\": \"PEK\",\n" +
+                "\t\t\t\t\t\t\"dep_airport\": \"SZX\",\n" +
+                "\t\t\t\t\t\t\"dep_date\": \"2022-09-25 12:30:00\",\n" +
+                "\t\t\t\t\t\t\"flight_no\": \"FM1234\"\n" +
+                "\t\t\t\t\t},\n" +
+                "\t\t\t\t\t\"order_id\": \"GN16549357124800006\",\n" +
+                "\t\t\t\t\t\"passenger\": {\n" +
+                "\t\t\t\t\t\t\"birthday\": \"1990-01-23\",\n" +
+                "\t\t\t\t\t\t\"cert_num\": \"41150319900123334X\",\n" +
+                "\t\t\t\t\t\t\"passenger_name\": \"顾于陶\",\n" +
+                "\t\t\t\t\t\t\"pnr\": \"HSZBJF\",\n" +
+                "\t\t\t\t\t\t\"ticket_no\": \"899-28743927432\",\n" +
+                "\t\t\t\t\t\t\"old_ticket_no\": \"898-28743927432\"\n" +
+                "\t\t\t\t\t},\n" +
+                "\t\t\t\t\t\"modify_fee\": 100,\n" +
+                "\t\t\t\t\t\"upgrade_fee\": 200,\n" +
+                "\t\t\t\t\t\"status\": 2\n" +
+                "\t\t\t\t}\n" +
+                "\t\t\t]\n" +
+                "\t\t},\n" +
+                "\t\t\"total_item\": 50\n" +
+                "\t}\n" +
+                "}";
+        return str;
+    }
+
 
 }
